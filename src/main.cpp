@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
 
 AsyncWebServer server(80);
 
@@ -17,12 +18,9 @@ void setup()
   }
   Serial.println("Connected to WiFi " + WiFi.localIP().toString());
 
-  server.serveStatic("/", SPIFFS, "/www/")
+  server.serveStatic("/", LittleFS, "/www/")
       .setDefaultFile("index.html")
       .setCacheControl("max-age=600");
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/plain", "Hello, world"); });
 
   server.begin();
 }
