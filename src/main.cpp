@@ -13,7 +13,7 @@ void setup()
 
   Serial.println("HTTP server starting..");
 
-  WiFi.begin("Erik's Galaxy S21 FE 5G","nfal1568");
+  WiFi.begin("","");
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
