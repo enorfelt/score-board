@@ -3,14 +3,17 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
+#include <FS.h>
 
-AsyncWebServer server(80);
+AsyncWebServer server(5000);
 
 void setup()
 {
   Serial.begin(115200);
 
-  WiFi.begin("LMV19", "NorfWiks");
+  Serial.println("HTTP server starting..");
+
+  WiFi.begin("Erik's Galaxy S21 FE 5G","nfal1568");
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
@@ -18,11 +21,29 @@ void setup()
   }
   Serial.println("Connected to WiFi " + WiFi.localIP().toString());
 
-  server.serveStatic("/", LittleFS, "/www/")
+  if (!LittleFS.begin())
+  {
+    Serial.println("An Error has occurred while mounting LittleFS");
+    return;
+  }
+
+  server.serveStatic("/", LittleFS, "/")
       .setDefaultFile("index.html")
       .setCacheControl("max-age=600");
 
+  server.on("/hello", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("Hello World");
+    request->send(200, "text/plain", "Hello World!");
+  });
+
+  server.onNotFound([](AsyncWebServerRequest *request) {
+    Serial.printf("Not found: %s\n", request->url().c_str());
+    request->send(404, "text/plain", "Not found");
+  });
+
   server.begin();
+
+  Serial.println("HTTP server started");
 }
 
 void loop()
