@@ -9,7 +9,7 @@ AsyncWebServer server(5000);
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   Serial.println("HTTP server starting..");
 
@@ -27,7 +27,7 @@ void setup()
     return;
   }
 
-  server.serveStatic("/", LittleFS, "/")
+  server.serveStatic("/", LittleFS, "/browser")
       .setDefaultFile("index.html")
       .setCacheControl("max-age=600");
 
