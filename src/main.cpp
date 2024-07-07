@@ -102,7 +102,7 @@ UpdateResult updateAll()
   // Home
   i = scoreBoardState.home / 10;
   s = "wd 0 " + String(i);
-  if (!compcomm.SendCommandLookForString(s, "MESSAGE_PASS"))
+  if (!compcomm.SendCommandLookForString(s, MESSAGE_PASS))
   {
     result.success = false;
     result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -110,7 +110,7 @@ UpdateResult updateAll()
   }
 
   s = "wd 1 " + String(scoreBoardState.home - (10 * i));
-  if (!compcomm.SendCommandLookForString(s, "MESSAGE_PASS"))
+  if (!compcomm.SendCommandLookForString(s, MESSAGE_PASS))
   {
     result.success = false;
     result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -119,7 +119,7 @@ UpdateResult updateAll()
 
   // Innings
   s = "wd 2 " + String(scoreBoardState.inning);
-  if (!compcomm.SendCommandLookForString(s, "MESSAGE_PASS"))
+  if (!compcomm.SendCommandLookForString(s, MESSAGE_PASS))
   {
     result.success = false;
     result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -129,7 +129,7 @@ UpdateResult updateAll()
   // Guest
   i = scoreBoardState.away / 10;
   s = "wd 3 " + String(i);
-  if (!compcomm.SendCommandLookForString(s, "MESSAGE_PASS"))
+  if (!compcomm.SendCommandLookForString(s, MESSAGE_PASS))
   {
     result.success = false;
     result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -137,7 +137,7 @@ UpdateResult updateAll()
   }
 
   s = "wd 4 " + String(scoreBoardState.away - (10 * i));
-  if (!compcomm.SendCommandLookForString(s, "MESSAGE_PASS"))
+  if (!compcomm.SendCommandLookForString(s, MESSAGE_PASS))
   {
     result.success = false;
     result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -145,9 +145,9 @@ UpdateResult updateAll()
   }
 
   // Out
-  if (scoreBoardState.outsInInning == 1)
+  if (( scoreBoardState.outsInInning > 0 && scoreBoardState.outsInInning < 3 ) || scoreBoardState.outsInInning > 3)
   {
-    if (!compcomm.SendCommandLookForString("wb 5 0 1", "MESSAGE_PASS"))
+    if (!compcomm.SendCommandLookForString("wb 5 0 1", MESSAGE_PASS))
     {
       result.success = false;
       result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -156,7 +156,7 @@ UpdateResult updateAll()
   }
   else
   {
-    if (!compcomm.SendCommandLookForString("wb 5 0 0", "MESSAGE_PASS"))
+    if (!compcomm.SendCommandLookForString("wb 5 0 0", MESSAGE_PASS))
     {
       result.success = false;
       result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -164,9 +164,9 @@ UpdateResult updateAll()
     }
   }
 
-  if (scoreBoardState.outsInInning == 2)
+  if (( scoreBoardState.outsInInning > 1 && scoreBoardState.outsInInning < 3 ) || scoreBoardState.outsInInning > 4)
   {
-    if (!compcomm.SendCommandLookForString("wb 5 1 1", "MESSAGE_PASS"))
+    if (!compcomm.SendCommandLookForString("wb 5 1 1", MESSAGE_PASS))
     {
       result.success = false;
       result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
@@ -175,11 +175,12 @@ UpdateResult updateAll()
   }
   else
   {
-    if (!compcomm.SendCommandLookForString("wb 5 1 0", "MESSAGE_PASS"))
+    if (!compcomm.SendCommandLookForString("wb 5 1 0", MESSAGE_PASS))
     {
       result.success = false;
       result.message = "Unexpected answer from unit. Command was " + s + ". Was looking for string " + MESSAGE_PASS + " in output " + compcomm.fetchedOutputString;
       return result;
     }
   }
+  return result;
 }
