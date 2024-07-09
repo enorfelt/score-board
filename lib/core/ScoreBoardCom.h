@@ -11,6 +11,7 @@ class ScoreBoardCom {
     bool Open();
     void Close();
     bool IsOpen();
+    bool ConnectionStatus();
     bool SendCommandLookForString(const String& command, const String& stringToLookFor);
     String read_ee(int addr);
     String read_int(String command);

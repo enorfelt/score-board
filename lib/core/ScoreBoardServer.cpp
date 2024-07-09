@@ -62,6 +62,9 @@ void ScoreBoardServer::Start()
   server->on("/api/score-board/load", HTTP_GET, [this](AsyncWebServerRequest *request)
              { sendJsonResponse(request, stateStore->getState(), 200); });
 
+  server->on("/api/score-board/status", HTTP_GET, [this](AsyncWebServerRequest *request)
+             { request->send(200, "application/json", "{ \"isReady\": \"" + String(stateStore->isReady()) + "\" }"); });
+
   server->onNotFound([](AsyncWebServerRequest *request)
                      {
     Serial.printf("Not found: %s\n", request->url().c_str());

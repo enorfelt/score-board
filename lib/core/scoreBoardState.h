@@ -40,6 +40,7 @@ public:
     }
     return result;
   }
+  bool isReady() { return com->ConnectionStatus(); }
 
 private:
   ScoreBoardState scoreBoardState;

@@ -34,6 +34,22 @@ bool ScoreBoardCom::IsOpen() {
   return boardSerial.isListening();
 }
 
+bool ScoreBoardCom::ConnectionStatus() {
+  if (!IsOpen()) {
+    Open();
+  }
+
+  if (SendCommandLookForString("C", "Control SW")) {
+    return true;
+  }
+
+  if (SendCommandLookForString("version", "Control SW")) {
+    return true;
+  }
+
+  return false;
+}
+
 bool ScoreBoardCom::SendCommandLookForString(const String& command, const String& stringToLookFor) {
   String fetchedOutputString = "";
   boardSerial.println(command);
