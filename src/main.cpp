@@ -4,6 +4,7 @@
 #include <FS.h>
 #include <ScoreBoardServer.h>
 #include <EspAsyncWiFiManager.h>
+#include <ESP8266mDNS.h>
 
 AsyncWebServer server(80);
 DNSServer dns;
@@ -15,6 +16,8 @@ void setup()
   Serial.begin(115200);
 
   Serial.println("\n Starting");
+
+  WiFi.hostname("ScoreBoard");
 
   AsyncWiFiManager wm(&server, &dns);
 
@@ -30,6 +33,11 @@ void setup()
   else
   {
     Serial.println("Connected to WiFi " + WiFi.localIP().toString());
+
+    if (MDNS.begin("board")) {
+      Serial.println("MDNS responder started");
+      MDNS.addService("http", "tcp", 80);
+    }
 
     if (!LittleFS.begin())
     {

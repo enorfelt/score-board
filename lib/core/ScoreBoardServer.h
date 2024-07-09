@@ -1,13 +1,8 @@
 #include <ESPAsyncWebServer.h>
-#include <AsyncJson.h>
 #include <ArduinoJson.h>
 #include <LittleFS.h>
-
-struct UpdateResult
-{
-  bool success;
-  String message;
-};
+#include <ScoreBoardState.h>
+#include <ScoreBoardCom.h>
 
 class ScoreBoardServer
 {
@@ -17,4 +12,5 @@ public:
 
 private:
   AsyncWebServer *server;
+  ScoreBoardStateStore *stateStore;
 };
