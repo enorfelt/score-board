@@ -34,9 +34,13 @@ void setup()
   {
     Serial.println("Connected to WiFi " + WiFi.localIP().toString());
 
+    Serial.println("Starting mDNS responder...");
     if (MDNS.begin("board")) {
-      Serial.println("MDNS responder started");
+      Serial.println("mDNS responder started, hostname: board.local");
       MDNS.addService("http", "tcp", 80);
+    }
+    else {
+      Serial.println("mDNS responder failed to start!");
     }
 
     if (!LittleFS.begin())
