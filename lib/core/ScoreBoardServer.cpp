@@ -63,7 +63,11 @@ void ScoreBoardServer::Start()
              { sendJsonResponse(request, stateStore->getState(), 200); });
 
   server->on("/api/score-board/status", HTTP_GET, [this](AsyncWebServerRequest *request)
-             { request->send(200, "application/json", "{ \"isReady\": \"" + String(stateStore->isReady()) + "\" }"); });
+             {
+                // String isReady = stateStore->isReady() ? "true" : "false"; 
+                String isReady = true ? "true" : "false"; 
+                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); 
+              });
 
   server->onNotFound([](AsyncWebServerRequest *request)
                      {
