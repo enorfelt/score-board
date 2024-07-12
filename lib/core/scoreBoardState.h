@@ -23,7 +23,7 @@ class ScoreBoardStateStore
 public:
   ScoreBoardStateStore()
   {
-    com = std::make_unique<ScoreBoardCom>(12, 14);
+    com = std::make_unique<ScoreBoardCom>(D5,D6);
     com->Open();
   }
   ~ScoreBoardStateStore()

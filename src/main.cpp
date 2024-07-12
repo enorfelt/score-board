@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <ESP8266WiFi.h> 
+#include <ESP8266WiFi.h>
 #include <LittleFS.h>
 #include <FS.h>
 #include <ScoreBoardServer.h>
@@ -35,11 +35,13 @@ void setup()
     Serial.println("Connected to WiFi " + WiFi.localIP().toString());
 
     Serial.println("Starting mDNS responder...");
-    if (MDNS.begin("board")) {
+    if (MDNS.begin("board"))
+    {
       Serial.println("mDNS responder started, hostname: board.local");
       MDNS.addService("http", "tcp", 80);
     }
-    else {
+    else
+    {
       Serial.println("mDNS responder failed to start!");
     }
 
@@ -62,4 +64,3 @@ void loop()
 {
   // put your main code here, to run repeatedly:
 }
-

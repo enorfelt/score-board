@@ -4,85 +4,116 @@
 // 4.	Command Parsing: The SendCommandLookForString(), read_ee(), and read_int() methods send a command and then look for a specific string in the response. This is a simple and effective way to parse the response, but it might not work well if the device's responses are not consistent, or if they contain the string you're looking for as part of another command or piece of data. You might consider implementing a more robust command parsing system, possibly using regular expressions or a state machine.
 // 5.	Non-Blocking Code: The SendCommandLookForString(), read_ee(), and read_int() methods are blocking, meaning they stop the rest of your program from running while they're waiting for a response. This might not be a problem in a simple program, but in a more complex program it could cause responsiveness issues. You might consider rewriting these methods to be non-blocking, possibly using callbacks or a state machine.
 
-
-ScoreBoardCom::ScoreBoardCom(int rx, int tx) : boardSerial(rx, tx) {
-  timeout = 1000; // 1 second timeout
+ScoreBoardCom::ScoreBoardCom(int rx, int tx) : boardSerial(rx, tx)
+{
+  timeout = 3000; // 1 second timeout
 }
 
-bool ScoreBoardCom::comportsexists() {
-  if (boardSerial.isListening()) {
+bool ScoreBoardCom::comportsexists()
+{
+  if (boardSerial.isListening())
+  {
     return true;
-  } else {
+  }
+  else
+  {
     return false;
   }
 }
 
-bool ScoreBoardCom::Open() {
-  if (!boardSerial.isListening()) {
+bool ScoreBoardCom::Open()
+{
+  if (!boardSerial.isListening())
+  {
     boardSerial.begin(9600);
     return true;
-  } else {
+  }
+  else
+  {
     return false;
   }
 }
 
-void ScoreBoardCom::Close() {
+void ScoreBoardCom::Close()
+{
   boardSerial.end();
 }
 
-bool ScoreBoardCom::IsOpen() {
+bool ScoreBoardCom::IsOpen()
+{
   return boardSerial.isListening();
 }
 
-bool ScoreBoardCom::ConnectionStatus() {
-  if (!IsOpen()) {
+bool ScoreBoardCom::ConnectionStatus()
+{
+  if (!IsOpen())
+  {
     Open();
   }
 
-  if (SendCommandLookForString("C", "Control SW")) {
+  if (SendCommandLookForString("C", "Control SW"))
+  {
     return true;
   }
 
-  if (SendCommandLookForString("version", "Control SW")) {
+  if (SendCommandLookForString("version", "Control SW"))
+  {
     return true;
   }
 
   return false;
 }
 
-bool ScoreBoardCom::SendCommandLookForString(const String& command, const String& stringToLookFor) {
+bool ScoreBoardCom::SendCommandLookForString(const String &command, const String &stringToLookFor)
+{
   String fetchedOutputString = "";
+  Serial.println("Sending command: " + command);
   boardSerial.println(command);
   unsigned long startTime = millis();
-  while (millis() - startTime < timeout) {
+  while (millis() - startTime < timeout)
+  {
+    // yield();
+    Serial.println("Waiting for response...");
     while (boardSerial.available()) {
       fetchedOutputString += (char)boardSerial.read();
+      Serial.println("Response so far: " + fetchedOutputString);
     }
-    if (fetchedOutputString.indexOf(stringToLookFor) != -1) {
+
+    if (fetchedOutputString.indexOf(stringToLookFor) != -1)
+    {
+      Serial.println("Ouput string: " + fetchedOutputString);
       return true;
     }
+    delay(50);
+    ESP.wdtFeed();
   }
   return false;
 }
 
-String ScoreBoardCom::read_ee(int addr) {
+String ScoreBoardCom::read_ee(int addr)
+{
   String fetchedOutputString = "";
   boardSerial.println("read_ee " + String(addr));
   unsigned long startTime = millis();
-  while (millis() - startTime < timeout) {
-    while (boardSerial.available()) {
+  while (millis() - startTime < timeout)
+  {
+    while (boardSerial.available())
+    {
       fetchedOutputString += (char)boardSerial.read();
     }
   }
   return fetchedOutputString;
 }
 
-String ScoreBoardCom::read_int(String command) {
+String ScoreBoardCom::read_int(String command)
+{
   String fetchedOutputString = "";
   boardSerial.println(command);
   unsigned long startTime = millis();
-  while (millis() - startTime < timeout) {
-    while (boardSerial.available()) {
+  while (millis() - startTime < timeout)
+  {
+    while (boardSerial.available())
+    {
       fetchedOutputString += (char)boardSerial.read();
     }
   }
