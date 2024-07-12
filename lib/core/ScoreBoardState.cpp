@@ -19,37 +19,37 @@ UpdateStateResult ScoreBoardStateStore::UpdateAll(const ScoreBoardState& newStat
   String command;
 
   // Home
-  int homeScoreTens = scoreBoardState.home / 10;
+  int homeScoreTens = newState.home / 10;
   command = "wd 0 " + String(homeScoreTens);
   if (!sendCommandAndCheckResult(command, result)) {
     return result;
   }
 
-  command = "wd 1 " + String(scoreBoardState.home - (10 * homeScoreTens));
+  command = "wd 1 " + String(newState.home - (10 * homeScoreTens));
   if (!sendCommandAndCheckResult(command, result)) {
     return result;
   }
 
   // Innings
-  command = "wd 2 " + String(scoreBoardState.inning);
+  command = "wd 2 " + String(newState.inning);
   if (!sendCommandAndCheckResult(command, result)) {
     return result;
   }
 
   // Guest
-  int awayScoreTens = scoreBoardState.away / 10;
+  int awayScoreTens = newState.away / 10;
   command = "wd 3 " + String(awayScoreTens);
   if (!sendCommandAndCheckResult(command, result)) {
     return result;
   }
 
-  command = "wd 4 " + String(scoreBoardState.away - (10 * awayScoreTens));
+  command = "wd 4 " + String(newState.away - (10 * awayScoreTens));
   if (!sendCommandAndCheckResult(command, result)) {
     return result;
   }
 
   // Out
-  if ((scoreBoardState.outsInInning > 0 && scoreBoardState.outsInInning < 3) || scoreBoardState.outsInInning > 3) {
+  if ((newState.outsInInning > 0 && newState.outsInInning < 3) || newState.outsInInning > 3) {
     if (!sendCommandAndCheckResult("wb 5 0 1", result)) {
       return result;
     }
@@ -59,7 +59,7 @@ UpdateStateResult ScoreBoardStateStore::UpdateAll(const ScoreBoardState& newStat
     }
   }
 
-  if ((scoreBoardState.outsInInning > 1 && scoreBoardState.outsInInning < 3) || scoreBoardState.outsInInning > 4) {
+  if ((newState.outsInInning > 1 && newState.outsInInning < 3) || newState.outsInInning > 4) {
     if (!sendCommandAndCheckResult("wb 5 1 1", result)) {
       return result;
     }

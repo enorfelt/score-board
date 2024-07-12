@@ -66,7 +66,7 @@ bool ScoreBoardCom::ConnectionStatus()
 
 bool ScoreBoardCom::SendCommandLookForString(const String &command, const String &stringToLookFor)
 {
-  String fetchedOutputString = "";
+  fetchedOutputString = "";
   Serial.println("Sending command: " + command);
   boardSerial.println(command);
   unsigned long startTime = millis();
