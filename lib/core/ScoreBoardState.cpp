@@ -2,6 +2,11 @@
 
 const char *MESSAGE_PASS = "Ok";
 
+void ScoreBoardStateStore::begin() {
+  com->Open();
+  isReady = com->ConnectionStatus();
+}
+
 bool ScoreBoardStateStore::sendCommandAndCheckResult(const String& command, UpdateStateResult& result) const {
   if (!com->SendCommandLookForString(command, MESSAGE_PASS)) {
     result.success = false;

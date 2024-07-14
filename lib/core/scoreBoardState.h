@@ -24,7 +24,6 @@ public:
   ScoreBoardStateStore()
   {
     com = std::make_unique<ScoreBoardCom>(D5,D6);
-    com->Open();
   }
   ~ScoreBoardStateStore()
   {
@@ -40,9 +39,11 @@ public:
     }
     return result;
   }
-  bool isReady() { return com->ConnectionStatus(); }
+  bool isReady() { return isReady; }
+  void begin();
 
 private:
+  bool isReady = false;
   ScoreBoardState scoreBoardState;
   std::unique_ptr<ScoreBoardCom> com;
   UpdateStateResult UpdateAll(const ScoreBoardState &newState) const;

@@ -34,11 +34,6 @@ bool ScoreBoardCom::IsOpen()
 
 bool ScoreBoardCom::ConnectionStatus()
 {
-  if (!IsOpen())
-  {
-    Open();
-  }
-
   if (SendCommandLookForString("C", "Control SW"))
   {
     return true;

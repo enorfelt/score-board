@@ -64,8 +64,7 @@ void ScoreBoardServer::Start()
 
   server->on("/api/score-board/status", HTTP_GET, [this](AsyncWebServerRequest *request)
              {
-                // String isReady = stateStore->isReady() ? "true" : "false"; 
-                String isReady = true ? "true" : "false"; 
+                String isReady = stateStore->isReady() ? "true" : "false"; 
                 request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); 
               });
 
@@ -75,4 +74,6 @@ void ScoreBoardServer::Start()
     request->send(404, "text/plain", "Not found"); });
 
   server->begin();
+
+  stateStore->begin();
 }
