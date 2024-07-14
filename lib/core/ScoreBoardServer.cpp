@@ -38,8 +38,7 @@ ScoreBoardServer::ScoreBoardServer(AsyncWebServer *server) : server(server), sta
 void ScoreBoardServer::Start()
 {
   server->serveStatic("/", LittleFS, "/browser/")
-      .setDefaultFile("index.html")
-      .setCacheControl("max-age=600");
+      .setDefaultFile("index.html");
 
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler("/api/score-board/update", [this](AsyncWebServerRequest *request, JsonVariant &json)
                                                                                {
