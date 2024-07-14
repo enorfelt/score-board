@@ -7,7 +7,6 @@
 class ScoreBoardCom {
   public:
     ScoreBoardCom(int rx, int tx);
-    bool comportsexists();
     bool Open();
     void Close();
     bool IsOpen();

@@ -9,18 +9,6 @@ ScoreBoardCom::ScoreBoardCom(int rx, int tx) : boardSerial(rx, tx)
   timeout = 3000; // 1 second timeout
 }
 
-bool ScoreBoardCom::comportsexists()
-{
-  if (boardSerial.isListening())
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
 bool ScoreBoardCom::Open()
 {
   if (!boardSerial.isListening())
