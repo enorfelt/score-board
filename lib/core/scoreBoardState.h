@@ -39,11 +39,13 @@ public:
     }
     return result;
   }
-  bool isReady() { return isReady; }
+  bool isReady() {
+    return this->_isReady;
+  }
   void begin();
 
 private:
-  bool isReady = false;
+  bool _isReady = false;
   ScoreBoardState scoreBoardState;
   std::unique_ptr<ScoreBoardCom> com;
   UpdateStateResult UpdateAll(const ScoreBoardState &newState) const;

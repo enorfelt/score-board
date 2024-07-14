@@ -4,7 +4,7 @@ const char *MESSAGE_PASS = "Ok";
 
 void ScoreBoardStateStore::begin() {
   com->Open();
-  isReady = com->ConnectionStatus();
+  this->_isReady = com->ConnectionStatus();
 }
 
 bool ScoreBoardStateStore::sendCommandAndCheckResult(const String& command, UpdateStateResult& result) const {
