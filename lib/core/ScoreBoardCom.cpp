@@ -52,19 +52,18 @@ bool ScoreBoardCom::SendCommandLookForString(const String &command, const String
   fetchedOutputString = "";
   Serial.println("Sending command: " + command);
   boardSerial.println(command);
+  boardSerial.flush();
+  Serial.println("Waiting for response...");
   unsigned long startTime = millis();
   while (millis() - startTime < timeout)
   {
-    // yield();
-    Serial.println("Waiting for response...");
     while (boardSerial.available()) {
       fetchedOutputString += (char)boardSerial.read();
-      Serial.println("Response so far: " + fetchedOutputString);
     }
 
     if (fetchedOutputString.indexOf(stringToLookFor) != -1)
     {
-      Serial.println("Ouput string: " + fetchedOutputString);
+      Serial.println("Command response: " + fetchedOutputString);
       return true;
     }
     delay(50);
