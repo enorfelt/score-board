@@ -29,7 +29,7 @@ public:
   {
     com->Close();
   }
-  ScoreBoardState getState() { return scoreBoardState; }
+  ScoreBoardState& getState() { return scoreBoardState; }
   UpdateStateResult updateState(const ScoreBoardState &newState)
   {
     UpdateStateResult result = UpdateAll(newState);

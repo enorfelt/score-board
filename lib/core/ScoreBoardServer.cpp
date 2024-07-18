@@ -3,7 +3,7 @@
 
 String StateToJson(const ScoreBoardState &state)
 {
-  JsonDocument doc;
+  StaticJsonDocument<200> doc;
   doc["home"] = state.home;
   doc["away"] = state.away;
   doc["inning"] = state.inning;
@@ -11,6 +11,7 @@ String StateToJson(const ScoreBoardState &state)
 
   String response;
   serializeJson(doc, response);
+
   return response;
 }
 
@@ -64,15 +65,13 @@ void ScoreBoardServer::Start()
   server->on("/api/score-board/status", HTTP_GET, [this](AsyncWebServerRequest *request)
              {
                 String isReady = stateStore->isReady() ? "true" : "false"; 
-                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); 
-              });
+                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); });
 
   server->on("/api/score-board/start", HTTP_GET, [this](AsyncWebServerRequest *request)
              {
                 stateStore->begin();
                 String isReady = stateStore->isReady() ? "true" : "false"; 
-                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); 
-              });
+                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); });
 
   server->onNotFound([](AsyncWebServerRequest *request)
                      {
