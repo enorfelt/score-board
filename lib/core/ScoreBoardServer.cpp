@@ -1,5 +1,6 @@
 #include <ScoreBoardServer.h>
 #include <AsyncJson.h>
+#include <time.h>
 
 String StateToJson(const ScoreBoardState &state)
 {
@@ -39,7 +40,8 @@ ScoreBoardServer::ScoreBoardServer(AsyncWebServer *server) : server(server), sta
 void ScoreBoardServer::Start()
 {
   server->serveStatic("/", LittleFS, "/browser/")
-      .setDefaultFile("index.html");
+      .setDefaultFile("index.html")
+      .setLastModified("Mon, 15 Jul 2024 00:00:00 GMT");
 
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler("/api/score-board/update", [this](AsyncWebServerRequest *request, JsonVariant &json)
                                                                                {
