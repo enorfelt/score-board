@@ -39,7 +39,7 @@ void ScoreBoardServer::Start()
 {
   server->serveStatic("/", LittleFS, "/browser/")
       .setDefaultFile("index.html")
-      .setLastModified("Mon, 15 Jul 2024 00:00:00 GMT");
+      .setLastModified("Fri, 19 Jul 2024 00:00:00 GMT");
 
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler("/api/score-board/update", [this](AsyncWebServerRequest *request, JsonVariant &json)
                                                                                {
