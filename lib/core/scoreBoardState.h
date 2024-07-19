@@ -2,6 +2,7 @@
 #define SCOREBOARDSTATE_H
 
 #include <memory>
+#include <string>
 #include <ScoreBoardCom.h>
 
 struct ScoreBoardState
@@ -15,7 +16,7 @@ struct ScoreBoardState
 struct UpdateStateResult
 {
   bool success;
-  String message;
+  std::string message;
 };
 
 class ScoreBoardStateStore
@@ -49,7 +50,7 @@ private:
   ScoreBoardState scoreBoardState;
   std::unique_ptr<ScoreBoardCom> com;
   UpdateStateResult UpdateAll(const ScoreBoardState &newState) const;
-  bool sendCommandAndCheckResult(const String &command, UpdateStateResult& result) const;
+  bool sendCommandAndCheckResult(const char* command, UpdateStateResult& result) const;
 };
 
 #endif // SCOREBOARDSTATE_H

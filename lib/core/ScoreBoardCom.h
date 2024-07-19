@@ -6,13 +6,13 @@
 
 class ScoreBoardCom {
   public:
-    ScoreBoardCom(int rx, int tx);
+    ScoreBoardCom(const int rx, const int tx);
     bool Open();
     void Close();
     bool IsOpen();
     bool ConnectionStatus();
-    bool SendCommandLookForString(const String& command, const String& stringToLookFor);
-    String fetchedOutputString;
+    bool SendCommandLookForString(const char* command, const char* stringToLookFor);
+    std::string fetchedOutputString;
 
   private:
     SoftwareSerial boardSerial;

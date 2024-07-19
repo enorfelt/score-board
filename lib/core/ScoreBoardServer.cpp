@@ -51,7 +51,7 @@ void ScoreBoardServer::Start()
 
   if (!result.success)
   {
-    request->send(500, F("application/json"), F("{\"message\":\"") + result.message + F("\"}"));
+    request->send(500, F("application/json"), String(F("{\"message\":\"")) + result.message.c_str() + F("\"}"));
     return;
   }
 

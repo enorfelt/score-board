@@ -4,7 +4,7 @@
 // 4.	Command Parsing: The SendCommandLookForString(), read_ee(), and read_int() methods send a command and then look for a specific string in the response. This is a simple and effective way to parse the response, but it might not work well if the device's responses are not consistent, or if they contain the string you're looking for as part of another command or piece of data. You might consider implementing a more robust command parsing system, possibly using regular expressions or a state machine.
 // 5.	Non-Blocking Code: The SendCommandLookForString(), read_ee(), and read_int() methods are blocking, meaning they stop the rest of your program from running while they're waiting for a response. This might not be a problem in a simple program, but in a more complex program it could cause responsiveness issues. You might consider rewriting these methods to be non-blocking, possibly using callbacks or a state machine.
 
-ScoreBoardCom::ScoreBoardCom(int rx, int tx) : boardSerial(rx, tx)
+ScoreBoardCom::ScoreBoardCom(const int rx, const int tx) : boardSerial(rx, tx)
 {
   timeout = 3000; // 1 second timeout
 }
@@ -47,15 +47,19 @@ bool ScoreBoardCom::ConnectionStatus()
   return false;
 }
 
-bool ScoreBoardCom::SendCommandLookForString(const String &command, const String &stringToLookFor)
+bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *stringToLookFor)
 {
-  fetchedOutputString = "";
   Serial.print(F("Sending command: "));
   Serial.println(command);
+
   boardSerial.println(command);
   boardSerial.flush();
+
   Serial.println(F("Waiting for response..."));
-  unsigned long startTime = millis();
+
+  const unsigned long startTime = millis();
+
+  fetchedOutputString.clear();
   while (millis() - startTime < timeout)
   {
     while (boardSerial.available())
@@ -63,13 +67,12 @@ bool ScoreBoardCom::SendCommandLookForString(const String &command, const String
       fetchedOutputString += (char)boardSerial.read();
     }
 
-    if (fetchedOutputString.indexOf(stringToLookFor) != -1)
+    if (fetchedOutputString.find(stringToLookFor) != std::string::npos)
     {
       Serial.print(F("Command response: "));
-      Serial.println(fetchedOutputString);
+      Serial.println(fetchedOutputString.c_str());
       return true;
     }
-    delay(50);
     ESP.wdtFeed();
   }
   return false;
