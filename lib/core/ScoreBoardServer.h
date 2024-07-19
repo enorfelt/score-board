@@ -7,7 +7,7 @@
 class ScoreBoardServer
 {
 public:
-  ScoreBoardServer(AsyncWebServer *server);
+  ScoreBoardServer(AsyncWebServer *server, ScoreBoardStateStore *stateStore);
   void Start();
 
 private:

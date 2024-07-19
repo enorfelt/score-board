@@ -3,6 +3,7 @@
 #include <LittleFS.h>
 #include <FS.h>
 #include <ScoreBoardServer.h>
+#include <ScoreBoardState.h>
 #include <EspAsyncWiFiManager.h>
 #include <ESP8266mDNS.h>
 
@@ -19,12 +20,13 @@
 AsyncWebServer server(80);
 DNSServer dns;
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, SCREEN_RST_PIN);
+ScoreBoardStateStore stateStore;
 
-QRCode qrcode;
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, SCREEN_RST_PIN);
 
 void displayQR(String url)
 {
+  QRCode qrcode;
   uint8_t qrcodeData[qrcode_getBufferSize(3)];
   qrcode_initText(&qrcode, qrcodeData, 2, ECC_LOW, url.c_str());
 
@@ -67,8 +69,8 @@ void displayCenteredText(String text, bool vertically = false)
 
 void setup()
 {
-  Serial.begin(115200);
 
+  Serial.begin(115200);
   Serial.println(F("Starting"));
 
   Wire.begin(SDA, SCL);
@@ -82,12 +84,12 @@ void setup()
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-  displayCenteredText("> Scoreboard <", true);
+  displayCenteredText(F("> Scoreboard <"), true);
   display.display();
 
   WiFi.mode(WIFI_STA);
 
-  WiFi.hostname("ScoreBoard");
+  WiFi.hostname(F("ScoreBoard"));
 
   AsyncWiFiManager wm(&server, &dns);
 
@@ -96,39 +98,39 @@ void setup()
   res = wm.autoConnect("ScoreBoard Config");
   if (!res)
   {
-    Serial.println("Failed to connect to WiFi");
+    Serial.println(F("Failed to connect to WiFi"));
     delay(3000);
     ESP.reset();
   }
   else
   {
-    Serial.println("Connected to WiFi " + WiFi.localIP().toString());
+    Serial.println(F("Connected to WiFi ") + WiFi.localIP().toString());
 
-    Serial.println("Starting mDNS responder...");
+    Serial.println(F("Starting mDNS responder..."));
     if (MDNS.begin("board"))
     {
-      Serial.println("mDNS responder started, hostname: board.local");
-      MDNS.addService("http", "tcp", 80);
+      Serial.println(F("mDNS responder started, hostname: board.local"));
+      MDNS.addService(F("http"), F("tcp"), 80);
     }
     else
     {
-      Serial.println("mDNS responder failed to start!");
+      Serial.println(F("mDNS responder failed to start!"));
     }
 
     if (!LittleFS.begin())
     {
-      Serial.println("An Error has occurred while mounting LittleFS");
+      Serial.println(F("An Error has occurred while mounting LittleFS"));
       return;
     }
 
-    Serial.println("Staring HTTP server...");
+    Serial.println(F("Staring HTTP server..."));
 
-    ScoreBoardServer scoreBoardServer(&server);
+    ScoreBoardServer scoreBoardServer(&server, &stateStore);
     scoreBoardServer.Start();
 
-    Serial.println("HTTP server started");
+    Serial.println(F("HTTP server started"));
 
-    String url = "http://" + WiFi.localIP().toString();
+    String url = F("http://") + WiFi.localIP().toString();
 
     display.clearDisplay();
     displayCenteredText(url);

@@ -4,7 +4,7 @@
 
 String StateToJson(const ScoreBoardState &state)
 {
-  StaticJsonDocument<200> doc;
+  JsonDocument doc;
   doc["home"] = state.home;
   doc["away"] = state.away;
   doc["inning"] = state.inning;
@@ -28,12 +28,10 @@ ScoreBoardState JsonToState(const JsonObject &json)
 
 void sendJsonResponse(AsyncWebServerRequest *request, const ScoreBoardState &state, int statusCode)
 {
-  String response = StateToJson(state);
-  Serial.println("Sending response: " + response);
-  request->send(statusCode, "application/json", response);
+  request->send(statusCode, F("application/json"), StateToJson(state));
 }
 
-ScoreBoardServer::ScoreBoardServer(AsyncWebServer *server) : server(server), stateStore(new ScoreBoardStateStore())
+ScoreBoardServer::ScoreBoardServer(AsyncWebServer *server, ScoreBoardStateStore *stateStore) : server(server), stateStore(stateStore)
 {
 }
 
@@ -45,40 +43,37 @@ void ScoreBoardServer::Start()
 
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler("/api/score-board/update", [this](AsyncWebServerRequest *request, JsonVariant &json)
                                                                                {
-  JsonObject bodyObj = json.as<JsonObject>();
-  JsonObject payloadObj = bodyObj["payload"].as<JsonObject>();
+  const JsonObject& bodyObj = json.as<JsonObject>();
+  const JsonObject& payloadObj = bodyObj["payload"].as<JsonObject>();
 
-  ScoreBoardState scoreBoardState = JsonToState(payloadObj);
-  UpdateStateResult result = stateStore->updateState(scoreBoardState);
+  std::unique_ptr<ScoreBoardState> scoreBoardState = std::make_unique<ScoreBoardState>(JsonToState(payloadObj));
+  UpdateStateResult result = stateStore->updateState(*scoreBoardState);
 
   if (!result.success)
   {
-    request->send(500, "application/json", "{\"message\":\"" + result.message + "\"}");
+    request->send(500, F("application/json"), F("{\"message\":\"") + result.message + F("\"}"));
     return;
   }
 
-  sendJsonResponse(request, scoreBoardState, 200); });
+  sendJsonResponse(request, *scoreBoardState, 200); });
 
   server->addHandler(updateHandler);
 
   server->on("/api/score-board/load", HTTP_GET, [this](AsyncWebServerRequest *request)
              { sendJsonResponse(request, stateStore->getState(), 200); });
 
-  server->on("/api/score-board/status", HTTP_GET, [this](AsyncWebServerRequest *request)
-             {
-                String isReady = stateStore->isReady() ? "true" : "false"; 
-                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); });
+  const String isReadyTrue = F("{ \"isReady\": true }");
+  const String isReadyFalse = F("{ \"isReady\": false }");
+  server->on("/api/score-board/status", HTTP_GET, [this, isReadyTrue, isReadyFalse](AsyncWebServerRequest *request)
+             { request->send(200, F("application/json"), stateStore->isReady() ? isReadyTrue : isReadyFalse); });
 
-  server->on("/api/score-board/start", HTTP_GET, [this](AsyncWebServerRequest *request)
+  server->on("/api/score-board/start", HTTP_GET, [this, isReadyTrue, isReadyFalse](AsyncWebServerRequest *request)
              {
                 stateStore->begin();
-                String isReady = stateStore->isReady() ? "true" : "false"; 
-                request->send(200, "application/json", "{ \"isReady\": " + isReady + " }"); });
+                request->send(200, F("application/json"), stateStore->isReady() ? isReadyTrue : isReadyFalse); });
 
   server->onNotFound([](AsyncWebServerRequest *request)
-                     {
-    Serial.printf("Not found: %s\n", request->url().c_str());
-    request->send(404, "text/plain", "Not found"); });
+                     { request->send(404, F("text/plain"), F("Not found")); });
 
   server->begin();
 
