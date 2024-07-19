@@ -50,54 +50,27 @@ bool ScoreBoardCom::ConnectionStatus()
 bool ScoreBoardCom::SendCommandLookForString(const String &command, const String &stringToLookFor)
 {
   fetchedOutputString = "";
-  Serial.println("Sending command: " + command);
+  Serial.print(F("Sending command: "));
+  Serial.println(command);
   boardSerial.println(command);
   boardSerial.flush();
-  Serial.println("Waiting for response...");
+  Serial.println(F("Waiting for response..."));
   unsigned long startTime = millis();
   while (millis() - startTime < timeout)
   {
-    while (boardSerial.available()) {
+    while (boardSerial.available())
+    {
       fetchedOutputString += (char)boardSerial.read();
     }
 
     if (fetchedOutputString.indexOf(stringToLookFor) != -1)
     {
-      Serial.println("Command response: " + fetchedOutputString);
+      Serial.print(F("Command response: "));
+      Serial.println(fetchedOutputString);
       return true;
     }
     delay(50);
     ESP.wdtFeed();
   }
   return false;
-}
-
-String ScoreBoardCom::read_ee(int addr)
-{
-  String fetchedOutputString = "";
-  boardSerial.println("read_ee " + String(addr));
-  unsigned long startTime = millis();
-  while (millis() - startTime < timeout)
-  {
-    while (boardSerial.available())
-    {
-      fetchedOutputString += (char)boardSerial.read();
-    }
-  }
-  return fetchedOutputString;
-}
-
-String ScoreBoardCom::read_int(String command)
-{
-  String fetchedOutputString = "";
-  boardSerial.println(command);
-  unsigned long startTime = millis();
-  while (millis() - startTime < timeout)
-  {
-    while (boardSerial.available())
-    {
-      fetchedOutputString += (char)boardSerial.read();
-    }
-  }
-  return fetchedOutputString;
 }
