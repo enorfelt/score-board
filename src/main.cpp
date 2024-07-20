@@ -84,7 +84,7 @@ void setup()
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-  displayCenteredText(F("> Scoreboard <"), true);
+  displayCenteredText(F(">> SCOREBOARD <<"), true);
   display.display();
 
   WiFi.mode(WIFI_STA);
