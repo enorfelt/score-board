@@ -5,11 +5,24 @@
 #include <string>
 #include <ScoreBoardCom.h>
 
-#ifndef D5
-#define D5 5
+// SoftwareSerial RX/TX pins for the scoreboard hardware connection.
+// Override per environment via build_flags in platformio.ini:
+//   -DSCOREBOARD_RX_PIN=<gpio> -DSCOREBOARD_TX_PIN=<gpio>
+// ESP8266 D1 Mini default: D5 (GPIO14) / D6 (GPIO12)
+// ESP32-S3 default: GPIO5 / GPIO6  — verify against your actual wiring
+#ifndef SCOREBOARD_RX_PIN
+  #ifdef ARDUINO_ARCH_ESP8266
+    #define SCOREBOARD_RX_PIN 14  // D5 on ESP8266 D1 Mini
+  #else
+    #define SCOREBOARD_RX_PIN 5
+  #endif
 #endif
-#ifndef D6
-#define D6 6
+#ifndef SCOREBOARD_TX_PIN
+  #ifdef ARDUINO_ARCH_ESP8266
+    #define SCOREBOARD_TX_PIN 12  // D6 on ESP8266 D1 Mini
+  #else
+    #define SCOREBOARD_TX_PIN 6
+  #endif
 #endif
 
 struct ScoreBoardState
@@ -31,7 +44,7 @@ class ScoreBoardStateStore
 public:
   ScoreBoardStateStore()
   {
-    com = std::make_unique<ScoreBoardCom>(D5,D6);
+    com = std::make_unique<ScoreBoardCom>(SCOREBOARD_RX_PIN, SCOREBOARD_TX_PIN);
   }
   ~ScoreBoardStateStore()
   {

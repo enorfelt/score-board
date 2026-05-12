@@ -76,6 +76,4 @@ void ScoreBoardServer::Start()
                      { request->send(404, F("text/plain"), F("Not found")); });
 
   server->begin();
-
-  stateStore->begin();
 }

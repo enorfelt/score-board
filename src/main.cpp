@@ -30,6 +30,7 @@ AsyncWebServer server(80);
 DNSServer dns;
 
 ScoreBoardStateStore stateStore;
+ScoreBoardServer scoreBoardServer(&server, &stateStore);
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, SCREEN_RST_PIN);
 
@@ -142,7 +143,6 @@ void setup()
 
     Serial.println(F("Staring HTTP server..."));
 
-    ScoreBoardServer scoreBoardServer(&server, &stateStore);
     scoreBoardServer.Start();
 
     Serial.println(F("HTTP server started"));
