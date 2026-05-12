@@ -1,11 +1,16 @@
 #include <Arduino.h>
+#ifdef ARDUINO_ARCH_ESP8266
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#else
+#include <WiFi.h>
+#include <ESPmDNS.h>
+#endif
 #include <LittleFS.h>
 #include <FS.h>
 #include <ScoreBoardServer.h>
 #include <ScoreBoardState.h>
-#include <EspAsyncWiFiManager.h>
-#include <ESP8266mDNS.h>
+#include <ESPAsyncWiFiManager.h>
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -15,7 +20,11 @@
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#ifdef ARDUINO_ARCH_ESP8266
 #define SCREEN_RST_PIN D4
+#else
+#define SCREEN_RST_PIN -1
+#endif
 
 AsyncWebServer server(80);
 DNSServer dns;
@@ -89,7 +98,11 @@ void setup()
 
   WiFi.mode(WIFI_STA);
 
+#ifdef ARDUINO_ARCH_ESP8266
   WiFi.hostname(F("ScoreBoard"));
+#else
+  WiFi.setHostname("ScoreBoard");
+#endif
 
   AsyncWiFiManager wm(&server, &dns);
 
@@ -100,11 +113,15 @@ void setup()
   {
     Serial.println(F("Failed to connect to WiFi"));
     delay(3000);
+#ifdef ARDUINO_ARCH_ESP8266
     ESP.reset();
+#else
+    ESP.restart();
+#endif
   }
   else
   {
-    Serial.println(F("Connected to WiFi ") + WiFi.localIP().toString());
+    Serial.println(String(F("Connected to WiFi ")) + WiFi.localIP().toString());
 
     Serial.println(F("Starting mDNS responder..."));
     if (MDNS.begin("board"))
@@ -130,7 +147,7 @@ void setup()
 
     Serial.println(F("HTTP server started"));
 
-    String url = F("http://") + WiFi.localIP().toString();
+    String url = String(F("http://")) + WiFi.localIP().toString();
 
     display.clearDisplay();
     displayCenteredText(url);
@@ -141,5 +158,7 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+#ifdef ARDUINO_ARCH_ESP8266
+  MDNS.update();
+#endif
 }

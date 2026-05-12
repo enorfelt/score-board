@@ -73,7 +73,9 @@ bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *st
       Serial.println(fetchedOutputString.c_str());
       return true;
     }
+#ifdef ARDUINO_ARCH_ESP8266
     ESP.wdtFeed();
+#endif
   }
   return false;
 }

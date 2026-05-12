@@ -5,6 +5,13 @@
 #include <string>
 #include <ScoreBoardCom.h>
 
+#ifndef D5
+#define D5 5
+#endif
+#ifndef D6
+#define D6 6
+#endif
+
 struct ScoreBoardState
 {
   int home = 0;
