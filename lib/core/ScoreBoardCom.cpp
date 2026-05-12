@@ -65,6 +65,8 @@ bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *st
     while (boardSerial.available())
     {
       fetchedOutputString += (char)boardSerial.read();
+      if (fetchedOutputString.size() > 512)
+        break;
     }
 
     if (fetchedOutputString.find(stringToLookFor) != std::string::npos)

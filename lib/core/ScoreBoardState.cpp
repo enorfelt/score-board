@@ -30,7 +30,7 @@ UpdateStateResult ScoreBoardStateStore::UpdateAll(const ScoreBoardState &newStat
   UpdateStateResult result;
   result.success = true;
 
-  char command[11];
+  char command[20];
 
   // Home
   int homeScoreTens = newState.home / 10;

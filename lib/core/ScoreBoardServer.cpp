@@ -19,10 +19,10 @@ String StateToJson(const ScoreBoardState &state)
 ScoreBoardState JsonToState(const JsonObject &json)
 {
   ScoreBoardState state;
-  state.home = json["home"];
-  state.away = json["away"];
-  state.inning = json["inning"];
-  state.outsInInning = json["outsInInning"];
+  state.home = constrain((int)json["home"], 0, 99);
+  state.away = constrain((int)json["away"], 0, 99);
+  state.inning = constrain((int)json["inning"], 1, 9);
+  state.outsInInning = constrain((int)json["outsInInning"], 0, 2);
   return state;
 }
 
@@ -44,6 +44,11 @@ void ScoreBoardServer::Start()
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler("/api/score-board/update", [this](AsyncWebServerRequest *request, JsonVariant &json)
                                                                                {
   const JsonObject& bodyObj = json.as<JsonObject>();
+  if (!bodyObj["payload"].is<JsonObject>())
+  {
+    request->send(400, F("application/json"), F("{\"message\":\"Missing or invalid payload\"}"));
+    return;
+  }
   const JsonObject& payloadObj = bodyObj["payload"].as<JsonObject>();
 
   std::unique_ptr<ScoreBoardState> scoreBoardState = std::make_unique<ScoreBoardState>(JsonToState(payloadObj));

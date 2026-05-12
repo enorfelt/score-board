@@ -138,7 +138,12 @@ void setup()
     if (!LittleFS.begin())
     {
       Serial.println(F("An Error has occurred while mounting LittleFS"));
-      return;
+      delay(3000);
+#ifdef ARDUINO_ARCH_ESP8266
+      ESP.reset();
+#else
+      ESP.restart();
+#endif
     }
 
     Serial.println(F("Staring HTTP server..."));
