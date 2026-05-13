@@ -13,4 +13,5 @@ public:
 private:
   AsyncWebServer *server;
   ScoreBoardStateStore *stateStore;
+  String indexEtag;
 };

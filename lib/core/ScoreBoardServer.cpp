@@ -37,8 +37,44 @@ ScoreBoardServer::ScoreBoardServer(AsyncWebServer *server, ScoreBoardStateStore 
 
 void ScoreBoardServer::Start()
 {
+  // Compute ETag from index.html content (djb2 hash) so it changes on every uploadfs
+  {
+    File f = LittleFS.open(F("/browser/index.html"), "r");
+    if (f)
+    {
+      uint32_t hash = 5381;
+      while (f.available())
+      {
+        hash = ((hash << 5) + hash) + (uint8_t)f.read();
+      }
+      f.close();
+      indexEtag = String(F("\"")) + String(hash, HEX) + F("\"");
+    }
+    else
+    {
+      indexEtag = F("\"0\"");
+    }
+  }
+
+  // Serve index.html with no-cache + ETag; registered before serveStatic so it takes priority
+  auto serveIndex = [this](AsyncWebServerRequest *request)
+  {
+    if (request->hasHeader("If-None-Match") && request->header("If-None-Match") == indexEtag)
+    {
+      request->send(304);
+      return;
+    }
+    AsyncWebServerResponse *response =
+        request->beginResponse(LittleFS, F("/browser/index.html"), F("text/html"));
+    response->addHeader(F("Cache-Control"), F("no-cache"));
+    response->addHeader(F("ETag"), indexEtag);
+    request->send(response);
+  };
+
+  server->on("/", HTTP_GET, serveIndex);
+  server->on("/index.html", HTTP_GET, serveIndex);
+
   server->serveStatic("/", LittleFS, "/browser/")
-      .setDefaultFile("index.html")
       .setLastModified("Fri, 19 Jul 2024 00:00:00 GMT");
 
   AsyncCallbackJsonWebHandler *updateHandler = new AsyncCallbackJsonWebHandler("/api/score-board/update", [this](AsyncWebServerRequest *request, JsonVariant &json)
