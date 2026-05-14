@@ -5,6 +5,7 @@ const char *MESSAGE_PASS = "Ok";
 void ScoreBoardStateStore::begin()
 {
   com->Open();
+  delay(200); // Allow SoftwareSerial and board to settle before sending
   this->_isReady = com->ConnectionStatus();
 }
 

@@ -11,7 +11,7 @@ class ScoreBoardCom {
     void Close();
     bool IsOpen();
     bool ConnectionStatus();
-    bool SendCommandLookForString(const char* command, const char* stringToLookFor);
+    bool SendCommandLookForString(const char* command, const char* stringToLookFor, bool withNewline = true);
     std::string fetchedOutputString;
 
   private:
