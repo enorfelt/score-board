@@ -68,14 +68,16 @@ UpdateStateResult ScoreBoardStateStore::UpdateAll(const ScoreBoardState &newStat
     return result;
   }
 
-  // Out 1 LED: lit when at least 1 out
-  if (!sendCommandAndCheckResult(newState.outsInInning >= 1 ? "wb 5 0 1" : "wb 5 0 0", result))
+  // Out LEDs: use modulo 3 so the display cycles correctly across both halves of an inning.
+  // 0,3 → both off | 1,4 → Out1 on | 2,5 → Out1+Out2 on
+  int outsDisplay = newState.outsInInning % 3;
+  if (!sendCommandAndCheckResult(outsDisplay >= 1 ? "wb 5 0 1" : "wb 5 0 0", result))
   {
     return result;
   }
 
-  // Out 2 LED: lit when at least 2 outs
-  if (!sendCommandAndCheckResult(newState.outsInInning >= 2 ? "wb 5 1 1" : "wb 5 1 0", result))
+  // Out 2 LED: lit when at least 2 outs in the current half-inning
+  if (!sendCommandAndCheckResult(outsDisplay >= 2 ? "wb 5 1 1" : "wb 5 1 0", result))
   {
     return result;
   }

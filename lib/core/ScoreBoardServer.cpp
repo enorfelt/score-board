@@ -22,7 +22,7 @@ ScoreBoardState JsonToState(const JsonObject &json)
   state.home = constrain((int)json["home"], 0, 99);
   state.away = constrain((int)json["away"], 0, 99);
   state.inning = constrain((int)json["inning"], 1, 9);
-  state.outsInInning = constrain((int)json["outsInInning"], 0, 2);
+  state.outsInInning = constrain((int)json["outsInInning"], 0, 5);
   return state;
 }
 
