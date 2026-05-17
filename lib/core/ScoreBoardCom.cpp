@@ -2,7 +2,7 @@
 
 ScoreBoardCom::ScoreBoardCom(const int rx, const int tx) : boardSerial(rx, tx)
 {
-  timeout = 3000; // 1 second timeout
+  timeout = 3000; // 3 second timeout
 }
 
 bool ScoreBoardCom::Open()
@@ -48,11 +48,9 @@ bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *st
   // Drain any stale bytes before sending
   while (boardSerial.available()) boardSerial.read();
 
-  // Send command + '\r\n' — the board responds to '\r' (screen terminal) and '\n'
-  // (C# GUI via WriteLine). Sending both maximises compatibility.
-  size_t written = boardSerial.print(command);
-  written += boardSerial.print('\r');
-  written += boardSerial.print('\n');
+  // Send command terminated with \r\n (what Arduino println() produces).
+  // The board accepts both \r (terminal) and \n (C# GUI), so \r\n covers both.
+  size_t written = boardSerial.println(command);
 
   Serial.printf("Wrote %u bytes. Waiting for response...\n", (unsigned)written);
 
