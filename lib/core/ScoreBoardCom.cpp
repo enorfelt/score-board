@@ -40,7 +40,7 @@ bool ScoreBoardCom::ConnectionStatus()
 }
 
 
-bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *stringToLookFor, bool withNewline)
+bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *stringToLookFor)
 {
   Serial.print(F("Sending command: "));
   Serial.println(command);
@@ -48,17 +48,11 @@ bool ScoreBoardCom::SendCommandLookForString(const char *command, const char *st
   // Drain any stale bytes before sending
   while (boardSerial.available()) boardSerial.read();
 
-  size_t written;
-  if (withNewline)
-  {
-    // Send command + '\r\n' — the board responds to '\r' (screen terminal) and '\n'
-    // (C# GUI via WriteLine). Sending both maximises compatibility.
-    written = boardSerial.print(command);
-    written += boardSerial.print('\r');
-    written += boardSerial.print('\n');
-  }
-  else
-    written = boardSerial.print(command);
+  // Send command + '\r\n' — the board responds to '\r' (screen terminal) and '\n'
+  // (C# GUI via WriteLine). Sending both maximises compatibility.
+  size_t written = boardSerial.print(command);
+  written += boardSerial.print('\r');
+  written += boardSerial.print('\n');
 
   Serial.printf("Wrote %u bytes. Waiting for response...\n", (unsigned)written);
 
